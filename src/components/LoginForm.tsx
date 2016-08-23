@@ -1,9 +1,9 @@
 import * as React from 'react'
 import {
 	Card, CardMedia, CardTitle, CardText, CardActions 
-} from 'react-toolbox/lib/card'
-import Input from 'react-toolbox/lib/input'
-import { Button, IconButton } from 'react-toolbox/lib/button'
+} from 'react-toolbox/lib/card/index'
+import Input from 'react-toolbox/lib/input/index'
+import { Button, IconButton } from 'react-toolbox/lib/button/index'
 import { observer } from 'mobx-react'
 import stores from '../stores'
 

@@ -4,13 +4,16 @@ import ProfileStore from './ProfileStore'
 import SnackbarStore from './SnackbarStore'
 import BaseStore from './BaseStore'
 
-class AuthStore extends BaseStore {
+interface IStores {
 	snackbar_store: SnackbarStore
-	profile_store: ProfileStore
+	profile_store: ProfileStore	
+}
+
+class AuthStore extends BaseStore {
+	stores: IStores
 
 	constructor () {
 		super()
-		this.dependencies = ['profile_store', 'snackbar_store']
 		
 		firebase.auth().onAuthStateChanged((user) => {
 			this.set_current_user_uid(user ? user.uid : null)
@@ -34,14 +37,15 @@ class AuthStore extends BaseStore {
 
 	@action('SET_CURRENT_USER_UID')
 	set_current_user_uid (uid: string) {
+		const { profile_store } = this.stores
 		const uid_tmp = this.current_user_uid
 		this.current_user_uid = uid
 
 		if (this.current_user_uid) {
-			this.profile_store.start_profile_subscription(this.current_user_uid)
+			profile_store.start_profile_subscription(this.current_user_uid)
 		} else {
 			if (uid_tmp) {
-				this.profile_store.stop_profile_subscription()
+				profile_store.stop_profile_subscription()
 			}
 		}
 	}
@@ -75,25 +79,27 @@ class AuthStore extends BaseStore {
 	}
 
 	login_submit () {
+		const { snackbar_store } = this.stores
 		const { login_email, login_password } = this
 		firebase.auth().signInWithEmailAndPassword(login_email, login_password)
 			.then(() => {
-				this.snackbar_store.show_message('Login successfull')
+				snackbar_store.show_message('Login successfull')
 			})
 			.catch((error: Error) => {
-				this.snackbar_store.show_message(error.message)
+				snackbar_store.show_message(error.message)
 			})
 	}
 
 	signup_submit () {
+		const { snackbar_store } = this.stores
 		const { signup_email, signup_password } = this
 
 		firebase.auth().createUserWithEmailAndPassword(signup_email, signup_password)
 			.then(() => {
-				this.snackbar_store.show_message('Login successfull')
+				snackbar_store.show_message('Login successfull')
 			})
 			.catch((error: Error) => {
-				this.snackbar_store.show_message(error.message)
+				snackbar_store.show_message(error.message)
 			})
 	}
 }

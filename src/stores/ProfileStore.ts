@@ -4,9 +4,13 @@ import AuthStore from './AuthStore'
 import firebase from '../firebase'
 import BaseStore from './BaseStore'
 
-class ProfileStore extends BaseStore {
+interface IStores {
 	auth_store: AuthStore
-	snackbar_store: SnackbarStore
+	snackbar_store: SnackbarStore	
+}
+
+class ProfileStore extends BaseStore {
+	stores: IStores
 
 	@observable
 	next_profile_image = ''
@@ -25,16 +29,12 @@ class ProfileStore extends BaseStore {
 	@observable
 	profile_image = ''
 
-	constructor () {
-		super()
-		this.dependencies = ['auth_store', 'snackbar_store']
-	}
-
 	@computed get is_restoreable () {
 		return !!this.tmp_profile_image
 	}	
 
 	start_profile_subscription (current_user_uid: string) {
+		const { snackbar_store } = this.stores
 		this.profile_ref = firebase.database().ref(`/profiles/${current_user_uid}`)
 		this.profile_ref.on('value', (snapshot) => {
 			const data = snapshot.val()
@@ -45,9 +45,9 @@ class ProfileStore extends BaseStore {
 			.then((url) => {
 				this.set_profile_image(url)
 			})
-			.catch((error: { message: string, code: string }) => {
+			.catch((error: any) => {
 				if (error.code !== 'storage/object-not-found') {
-					this.snackbar_store.show_message(error.message)
+					snackbar_store.show_message(error.message)
 				}
 			})		
 	}
@@ -104,29 +104,46 @@ class ProfileStore extends BaseStore {
 
 	@action('HANDLE_IMAGE_UPLOADE')
 	handle_image_upload () {
-		const { current_user_uid } = this.auth_store
-		this.storage_ref.child(`/profiles/${current_user_uid}`)
-			.put(this.tmp_profile_image_file)
-			.then(() => {
-				this.clear_tmp_profile_image()
-				this.snackbar_store.show_message('Upload successfull')
-			})
-			.catch((err) => {
-				this.snackbar_store.show_message(err.message)
-			})
+		const { storage_ref } = this
+		const { auth_store, snackbar_store } = this.stores
+		const { current_user_uid } = auth_store
+		const refPath = `/profiles/${current_user_uid}`
+		const uploadTask = storage_ref.child(refPath).put(this.tmp_profile_image_file)
+
+		uploadTask.on('state_changed', (snapshot) => {
+			var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+			console.log('Upload is ' + progress + '% done');
+			switch (snapshot.state) {
+				case firebase.storage.TaskState.PAUSED: // or 'paused'
+					console.log('Upload is paused');
+					break;
+				case firebase.storage.TaskState.RUNNING: // or 'running'
+					console.log('Upload is running')
+					break;
+			}
+		}, (err: { message: string }) => {
+			snackbar_store.show_message(err.message)
+		}, () => {
+			const { downloadURL } = uploadTask.snapshot
+			this.clear_tmp_profile_image()
+			this.set_profile_image(downloadURL)
+			snackbar_store.show_message('Upload successfull')			
+		})
 	}
 
 	@action('HANDLE_PROFILE_SUBMIT')
 	profile_submit () {
 		const { uid } = firebase.auth().currentUser
+		const { snackbar_store } = this.stores
+		
 		firebase.database().ref('profiles/' + firebase.auth().currentUser.uid).set({
 			display_name: this.profile_display_name
 		})
 		.then(() => {
-			this.snackbar_store.show_message('Saved successfully')
+			snackbar_store.show_message('Saved successfully')
 		})
 		.catch(() => {
-			this.snackbar_store.show_message('Problem saving data')
+			snackbar_store.show_message('Problem saving data')
 		})
 	}	
 }

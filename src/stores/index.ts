@@ -16,11 +16,13 @@ const stores = {
 }
 
 Object.keys(stores).forEach((key) => {
-	stores[key].dependencies.forEach((dependency) => {
-		stores[key][dependency] = stores[dependency]
-	})
+	const store = stores[key]
+
+	if (store.stores) {
+		for (let store_name in store.stores) {
+			store.stores[store_name] = stores[store_name]	
+		}
+	}
 })
-
-
 
 export default stores

@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { 
-	Card, CardMedia, CardTitle, CardText, CardActions 
-} from 'react-toolbox/lib/card'
 import Input from 'react-toolbox/lib/input'
 import { Button, IconButton } from 'react-toolbox/lib/button'
 import { observer } from 'mobx-react'
 import stores from '../stores'
+const { 
+	Card, CardMedia, CardTitle, CardText, CardActions 
+} = require('react-toolbox/lib/card')
 
 function SignupForm (props: ISignupFormProps) {
 	if (props.is_logged_in) { return null }

@@ -9,10 +9,12 @@ const GLOBAL_STYLE = path.join(__dirname, 'src/styles/global.scss')
 let config = {
 	entry: {
 		bundle: path.join(__dirname, 'src/app.tsx'),
-		vendor: ['react', 'react-dom', 'react-router', 'mobx', 'mobx-react', 'firebase', 'react-addons-css-transition-group', 'react-flex']
+		vendor: ['react', 'react-dom', 'react-router', 'mobx', 
+						 'mobx-react', 'firebase', 'react-addons-css-transition-group', 
+						 'react-flex']
 	},
   resolve: {
-    extensions: ['', '.ts', '.tsx', '.js', '.jsx', '.css', '.scss']
+    extensions: ['', '.ts', '.tsx', '.js', '.jsx']
   },
   devtool: 'source-map',	
 	output: {
@@ -22,7 +24,6 @@ let config = {
 	},
 	module: {
 		loaders: [
-			{ test: /\.tsx?$/, loaders: ['babel', 'awesome-typescript'] },
 			{
 				test: GLOBAL_STYLE,
 				loaders: ['style', 'css', 'sass']
@@ -44,6 +45,9 @@ let config = {
 		new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.js' }),
 		copyWebpack([{ from: path.join(__dirname, 'src/sw.js'), to: path.join(__dirname, 'public/assets/sw.js') }])
 	],
+	ts: {
+    silent: true
+  },
 	sassLoader: {
 		data: '@import "' + path.join(__dirname, 'src/styles/theme.scss') + '";'
 	}	
@@ -57,6 +61,9 @@ if (parseInt(DEV_SERVER) === 1) {
 }
 
 if (NODE_ENV === 'production') {
+	config.module.loaders.push(
+		{ test: /\.tsx?$/, loaders: ['babel', 'awesome-typescript'] }
+	)	
 	config.plugins.push(new webpack.optimize.DedupePlugin())
 	config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin())
 	config.plugins.push(new webpack.optimize.UglifyJsPlugin({
@@ -74,6 +81,10 @@ if (NODE_ENV === 'production') {
 		},
 		minimize: true
 	}))
+} else {
+	config.module.loaders.push(
+		{ test: /\.tsx?$/, loaders: ['ts'] }
+	)
 }
 
 module.exports = config

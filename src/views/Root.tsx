@@ -1,14 +1,14 @@
 import React = require('react')
 import { Layout, NavDrawer, Panel } from 'react-toolbox/lib/layout'
 import { Snackbar } from 'react-toolbox/lib/snackbar'
-import { IconButton } from 'react-toolbox/lib/button'
 import { AppBar } from 'react-toolbox/lib/app_bar'
 import DrawerLink from '../components/DrawerLink'
 import { Navigation } from 'react-toolbox/lib/navigation'
 import { observer } from 'mobx-react'
 import { Flex } from 'react-flex'
 import stores from '../stores'
-import { IconMenu, Menu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
+import { IconMenu, Menu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu'
+import { IconButton } from 'react-toolbox/lib/button'
 
 export class Root extends React.Component<IRootProps, any> {
 	render () {
