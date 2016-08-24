@@ -62,7 +62,7 @@ if (parseInt(DEV_SERVER) === 1) {
 
 if (NODE_ENV === 'production') {
 	config.module.loaders.push(
-		{ test: /\.tsx?$/, loaders: ['babel', 'awesome-typescript'] }
+		{ test: /\.tsx?$/, loaders: ['babel', 'ts'] }
 	)	
 	config.plugins.push(new webpack.optimize.DedupePlugin())
 	config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin())

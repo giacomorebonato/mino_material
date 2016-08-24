@@ -9,6 +9,8 @@ interface IStores {
 	snackbar_store: SnackbarStore	
 }
 
+
+
 class ProfileStore extends BaseStore {
 	stores: IStores
 
@@ -21,7 +23,7 @@ class ProfileStore extends BaseStore {
 	profile_display_name = ''
 
 	profile_ref: any = null
-	storage_ref = firebase.storage().ref()
+	storage_ref = firebase.storage ? firebase.storage().ref() : null
 
 	@observable
 	tmp_profile_image = ''
