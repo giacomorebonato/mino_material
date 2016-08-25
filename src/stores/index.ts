@@ -19,6 +19,7 @@ Object.keys(stores).forEach((key) => {
 	const store = stores[key]
 
 	if (store.stores) {
+		
 		for (let store_name in store.stores) {
 			store.stores[store_name] = stores[store_name]	
 		}

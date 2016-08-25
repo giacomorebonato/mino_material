@@ -9,10 +9,11 @@ interface IStores {
 	snackbar_store: SnackbarStore	
 }
 
-
-
 class ProfileStore extends BaseStore {
-	stores: IStores
+	stores: IStores = {
+		auth_store: null,
+		snackbar_store: null
+	}
 
 	@observable
 	next_profile_image = ''
@@ -32,7 +33,7 @@ class ProfileStore extends BaseStore {
 	profile_image = ''
 
 	@computed get is_restoreable () {
-		return !!this.tmp_profile_image
+		return this.tmp_profile_image !== ''
 	}	
 
 	start_profile_subscription (current_user_uid: string) {
@@ -81,6 +82,12 @@ class ProfileStore extends BaseStore {
 	restore_images () {
 		this.set_profile_image(this.tmp_profile_image)
 		this.tmp_profile_image = ''
+		this.next_profile_image = ''
+	}
+
+	@action('SET_TMP_PROFILE_IMAGE')
+	set_tmp_profile_image (image: string) {
+		this.tmp_profile_image = image
 	}		
 
 	@action('CLEAR_TMP_PROFILE_IMAGE')
@@ -88,7 +95,7 @@ class ProfileStore extends BaseStore {
 		this.tmp_profile_image = ''
 	}	
 
-	@action('SET_TMP_PROFILE_IMAGE')
+	@action('SET_NEXT_PROFILE_IMAGE')
 	set_next_profile_image (dataUrl: string) {
 		this.next_profile_image = dataUrl
 	}	
@@ -100,8 +107,6 @@ class ProfileStore extends BaseStore {
 			this.set_next_profile_image(reader.result)
 		}
 		reader.readAsDataURL(file)
-
-		this.tmp_profile_image_file = file
 	}
 
 	@action('HANDLE_IMAGE_UPLOADE')
@@ -118,10 +123,10 @@ class ProfileStore extends BaseStore {
 			switch (snapshot.state) {
 				case firebase.storage.TaskState.PAUSED: // or 'paused'
 					console.log('Upload is paused');
-					break;
+					break
 				case firebase.storage.TaskState.RUNNING: // or 'running'
 					console.log('Upload is running')
-					break;
+					break
 			}
 		}, (err: { message: string }) => {
 			snackbar_store.show_message(err.message)

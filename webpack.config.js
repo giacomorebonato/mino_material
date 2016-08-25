@@ -11,7 +11,7 @@ let config = {
 		bundle: path.join(__dirname, 'src/app.tsx'),
 		vendor: ['react', 'react-dom', 'react-router', 'mobx', 
 						 'mobx-react', 'firebase', 'react-addons-css-transition-group', 
-						 'react-flex']
+						 'react-flex', 'react-toolbox']
 	},
   resolve: {
     extensions: ['', '.ts', '.tsx', '.js', '.jsx']

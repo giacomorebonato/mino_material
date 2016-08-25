@@ -10,7 +10,10 @@ interface IStores {
 }
 
 class AuthStore extends BaseStore {
-	stores: IStores
+	stores: IStores = {
+		snackbar_store: null,
+		profile_store: null
+	}
 
 	constructor () {
 		super()

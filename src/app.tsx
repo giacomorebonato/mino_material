@@ -15,7 +15,6 @@ if ('serviceWorker' in navigator) {
 	})
 }
 
-
 render(
 	<Router routes={routes} history={browserHistory} />,
 	document.getElementById('app')
